@@ -16,8 +16,20 @@ router.get('/:id', (req, res) => {
 
 // CREATE A USER
 router.post('/', (req, res) => {
-    User.create(req.body).then(newUser => res.json(newUser))
+   User.create(req.body).then(newUser => res.json(newUser))
 })
+
+// CREATE A NEW TODO
+router.post('/:userId/new-todo/', (req, res) => {
+    User.findById(req.params.userId).then(user => {
+      let newTodo = req.body;
+      newTodo.done = false;
+  
+      user.todos.push(newTodo);
+      user.save();
+      res.json(user);
+    });  
+  })
 
 // UPDATE A USER	
 router.put('/:id', (req, res) => {
@@ -29,5 +41,35 @@ router.put('/:id', (req, res) => {
 router.delete('/:id', (req, res) => {
     User.findByIdAndDelete(req.params.id).then(deletedUser => res.json(deletedUser))
 })	
+
+// TOGGLE THE DONE FIELD ON A TODO
+router.put("/:userId/update-todo/:todoId", (req, res) => {
+    User.findById(req.params.userId).then(user => {
+  
+      // FIND THE TODO INDEX
+      let todoIndex = user.todos.findIndex(todo => todo._id == req.params.todoId);
+  
+      // TOGGLE DONE
+      user.todos[todoIndex].done = !user.todos[todoIndex].done
+      user.save()
+  
+      res.json(user);
+    });
+  });
+
+  // DELETE A TODO
+router.delete("/:userId/delete-todo/:todoId", (req, res) => {
+    User.findById(req.params.userId).then(user => {
+  
+      // FIND THE TODO INDEX
+      let todoIndex = user.todos.findIndex(todo => todo._id == req.params.todoId);
+  
+      // DELETE TODO WITH SPLICE
+      user.todos.splice(todoIndex, 1)
+      user.save()
+  
+      res.json(user);
+    });
+  });
 
 module.exports = router
