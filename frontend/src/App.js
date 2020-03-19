@@ -93,7 +93,7 @@ class App extends React.Component {
           />
           <Route
             path="/users/:id"
-            render={routerProps => <UserDetail users={this.state.users} />}
+            render={routerProps => <UserDetail {...routerProps} users={this.state.users} />}
           />
           <Route
             path="/new-user-form"
@@ -104,7 +104,7 @@ class App extends React.Component {
               />
             )}
           />
-          <Route path="/*" render={() => <Redirect to="/users" />} />
+          <Route path="/*" render={() => <Redirect to="/" />} />
         </Switch>
       </div>
     );
