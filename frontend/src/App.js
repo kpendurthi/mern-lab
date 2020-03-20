@@ -18,9 +18,10 @@ class App extends React.Component {
 
     this.state = {
       users: [],
-      newUserName: '',
-      newUserEmail: ''
-    }
+      newUserName: "",
+      newUserEmail: "",
+      newTodoDescription: "" 
+    };	
   }
 
   componentDidMount() {
@@ -62,6 +63,21 @@ class App extends React.Component {
     });
   }
 
+  handleNewTodoSubmit = event => {
+    event.preventDefault();
+    axios({
+      method: "POST",
+      url: `${backendUrl}${event.target.id}/new-todo/`,
+      data: {
+        description: this.state.newTodoDescription
+      }
+    }).then(newUser => {
+      this.setState({newTodoDescription: ''});
+      this.getUsersAxios();
+      this.props.history.push(`/users/${newUser.data._id}`);
+    });
+  }
+  
   handleSubmit = event => {
     event.preventDefault()
     this.createUserAxios()
@@ -92,8 +108,16 @@ class App extends React.Component {
             )}
           />
           <Route
-            path="/users/:id"
-            render={routerProps => <UserDetail {...routerProps} users={this.state.users} />}
+              path="/users/:id"
+              render={routerProps => (
+                <UserDetail
+                  {...routerProps}
+                  users={this.state.users}
+                  newTodoDescription={this.state.newTodoDescription}
+                  handleChange={this.handleChange}
+                  handleNewTodoSubmit={this.handleNewTodoSubmit}
+                />
+              )}
           />
           <Route
             path="/new-user-form"
